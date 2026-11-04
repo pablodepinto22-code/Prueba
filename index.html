@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inmobiliaria Ejemplo | Compra, venta y alquiler de viviendas</title>
+<meta name="description" content="Página piloto de una inmobiliaria: buscador de propiedades, servicios, equipo, opiniones y contacto.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pine: #14463f;
+    --pine-dark: #0d302b;
+    --brass: #b8893b;
+    --brass-light: #f1e2c3;
+    --paper: #f6f8f7;
+    --white: #ffffff;
+    --ink: #1b2a28;
+    --muted: #5b6b68;
+    --line: #d9e1de;
+    --radius: 8px;
+    --head: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 4.5rem; }
+  body { font-family: var(--body); font-size: 1.0625rem; line-height: 1.55; color: var(--ink); background: var(--paper); }
+  svg { display: block; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--brass); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 1.25rem; }
+  section { padding: 4rem 0; }
+  h2 { font-family: var(--head); font-weight: 700; font-size: clamp(1.6rem, 3.5vw, 2.15rem); line-height: 1.15; }
+  .intro { color: var(--muted); margin-top: .45rem; max-width: 60ch; }
+
+  .btn { display: inline-block; font: inherit; font-weight: 600; text-decoration: none; text-align: center; cursor: pointer; border: 0; border-radius: var(--radius); padding: .75rem 1.3rem; background: var(--brass); color: #1b1305; }
+  .btn:hover { background: #c8973f; }
+  .btn.dark { background: var(--pine); color: var(--white); }
+  .btn.dark:hover { background: var(--pine-dark); }
+  .btn.ghost { background: transparent; color: var(--pine); border: 2px solid var(--pine); padding: calc(.75rem - 2px) calc(1.3rem - 2px); }
+  .btn.ghost:hover { background: var(--pine); color: var(--white); }
+
+  /* Cabecera */
+  header.top { background: var(--pine-dark); color: var(--white); position: sticky; top: 0; z-index: 20; }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-top: .8rem; padding-bottom: .8rem; flex-wrap: wrap; }
+  .logo { display: flex; align-items: center; gap: .55rem; font-family: var(--head); font-weight: 700; font-size: 1.25rem; text-decoration: none; }
+  .logo span { color: var(--brass); }
+  nav ul { display: flex; gap: 1.3rem; list-style: none; flex-wrap: wrap; align-items: center; }
+  nav a { text-decoration: none; font-weight: 600; font-size: .96rem; padding: .2rem 0; border-bottom: 2px solid transparent; }
+  nav a:hover { border-bottom-color: var(--brass); }
+  nav a.btn { padding: .45rem .95rem; border-bottom: 0; font-size: .95rem; }
+
+  /* Portada */
+  .hero { background: var(--pine); color: var(--white); padding: 0; }
+  .hero .wrap { display: grid; grid-template-columns: 1.05fr .95fr; gap: 2.5rem; align-items: center; padding-top: 3.5rem; padding-bottom: 3.5rem; }
+  .hero h1 { font-family: var(--head); font-weight: 700; font-size: clamp(2.1rem, 5vw, 3.4rem); line-height: 1.08; max-width: 15ch; }
+  .hero .lead { margin-top: 1rem; max-width: 44ch; font-size: 1.15rem; color: #dbe8e4; }
+  .search { margin-top: 1.8rem; background: var(--white); color: var(--ink); border-radius: var(--radius); padding: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; align-items: end; }
+  .field label { display: block; font-size: .85rem; font-weight: 600; color: var(--muted); margin-bottom: .25rem; }
+  .field select { width: 100%; padding: .65rem .7rem; font: inherit; border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); color: var(--ink); }
+  .hero-art { border-radius: 14px; overflow: hidden; background: #bfe3f4; box-shadow: 0 18px 40px rgba(0,0,0,.28); }
+  .hero-art svg { width: 100%; height: auto; }
+
+  /* Cifras */
+  .stats { background: var(--white); border-bottom: 1px solid var(--line); padding: 1.6rem 0; }
+  .stats ul { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  .stats strong { display: block; font-family: var(--head); font-size: 1.7rem; color: var(--pine); line-height: 1.1; }
+  .stats span { color: var(--muted); font-size: .96rem; }
+
+  /* Propiedades */
+  .toolbar { display: flex; justify-content: space-between; align-items: end; gap: 1rem; flex-wrap: wrap; }
+  #contador { color: var(--muted); font-weight: 600; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.8rem; }
+  .card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; }
+  .photo { position: relative; aspect-ratio: 4 / 3; background: #cfe6f2; }
+  .photo svg { width: 100%; height: 100%; }
+  .tag { position: absolute; left: .7rem; top: .7rem; background: var(--pine-dark); color: var(--white); font-size: .85rem; font-weight: 600; padding: .2rem .65rem; border-radius: 4px; }
+  .tag.nuevo { left: auto; right: .7rem; background: var(--brass); color: #1b1305; }
+  .card .body { padding: 1rem 1.1rem 1.2rem; display: flex; flex-direction: column; gap: .3rem; flex: 1; }
+  .price { font-family: var(--head); font-weight: 700; font-size: 1.5rem; color: var(--pine); }
+  .price small { font-family: var(--body); font-weight: 400; font-size: .95rem; color: var(--muted); }
+  .card h3 { font-size: 1.08rem; font-weight: 600; line-height: 1.3; }
+  .zone { color: var(--muted); font-size: .96rem; }
+  .facts { display: flex; gap: 1rem; margin-top: .3rem; padding-top: .7rem; border-top: 1px solid var(--line); font-size: .95rem; color: var(--muted); }
+  .card .more { margin-top: auto; align-self: flex-start; margin-top: .9rem; font: inherit; font-weight: 600; color: var(--pine); background: none; border: 0; padding: .2rem 0; cursor: pointer; border-bottom: 2px solid var(--brass); }
+  .card .more:hover { color: var(--pine-dark); }
+  .empty { margin-top: 1.8rem; padding: 1.4rem; background: var(--white); border: 1px dashed var(--line); border-radius: var(--radius); color: var(--muted); }
+  .empty button { font: inherit; font-weight: 600; color: var(--pine); background: none; border: 0; text-decoration: underline; cursor: pointer; }
+
+  /* Detalle (ventana) */
+  dialog { border: 0; border-radius: 12px; padding: 0; width: calc(100% - 2rem); max-width: 780px; margin: auto; color: var(--ink); background: var(--white); }
+  dialog::backdrop { background: rgba(13,48,43,.65); }
+  .dlg { display: grid; grid-template-columns: 1.1fr 1fr; }
+  .dlg .photo { aspect-ratio: auto; min-height: 320px; }
+  .dlg .info { padding: 1.5rem; display: flex; flex-direction: column; gap: .5rem; }
+  .dlg h3 { font-family: var(--head); font-size: 1.35rem; line-height: 1.2; padding-right: 2rem; }
+  .dlg ul { margin: .4rem 0 .6rem 1.1rem; }
+  .dlg li { margin-top: .15rem; }
+  .dlg .actions { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: auto; padding-top: .8rem; }
+  .close { position: absolute; top: .6rem; right: .6rem; width: 2.2rem; height: 2.2rem; border-radius: 50%; border: 0; background: var(--white); color: var(--ink); font-size: 1.3rem; line-height: 1; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.25); }
+
+  /* Servicios */
+  .services { background: var(--white); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .cards4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.4rem; margin-top: 1.8rem; }
+  .service { padding: 1.3rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+  .service svg { width: 44px; height: 44px; fill: none; stroke: var(--pine); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .service h3 { font-size: 1.12rem; margin: .8rem 0 .3rem; }
+  .service p { color: var(--muted); font-size: .98rem; }
+
+  /* Proceso */
+  .process { background: var(--pine-dark); color: var(--white); }
+  .process .intro { color: #b9cbc6; }
+  .process ol { list-style: none; counter-reset: paso; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.4rem; margin-top: 1.8rem; }
+  .process li { counter-increment: paso; padding-top: 1rem; border-top: 3px solid var(--brass); }
+  .process li::before { content: counter(paso); display: block; font-family: var(--head); font-weight: 700; font-size: 2rem; color: var(--brass); line-height: 1; }
+  .process h3 { margin: .5rem 0 .3rem; font-size: 1.12rem; }
+  .process p { color: #cfdcd8; font-size: .98rem; }
+
+  /* Zonas */
+  .zones .cards4 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .zonecard { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .zonecard .photo { aspect-ratio: 16 / 9; }
+  .zonecard div.t { padding: .9rem 1.1rem 1.1rem; }
+  .zonecard h3 { font-size: 1.1rem; }
+  .zonecard p { color: var(--muted); font-size: .97rem; margin-top: .2rem; }
+
+  /* Equipo */
+  .about { background: var(--white); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .about .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: center; }
+  .about .art { border-radius: 14px; overflow: hidden; }
+  .about .art svg { width: 100%; height: auto; }
+  .about p { margin-top: .9rem; max-width: 52ch; }
+  .team { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.5rem; }
+  .team svg { width: 100%; height: auto; border-radius: var(--radius); }
+  .team strong { display: block; margin-top: .45rem; line-height: 1.25; }
+  .team span { color: var(--muted); font-size: .92rem; }
+
+  /* Opiniones */
+  .quotes { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1.4rem; margin-top: 1.8rem; }
+  blockquote { background: var(--white); border: 1px solid var(--line); border-left: 4px solid var(--brass); border-radius: var(--radius); padding: 1.2rem 1.3rem; }
+  blockquote p { font-size: 1.04rem; }
+  blockquote footer { margin-top: .8rem; font-size: .93rem; color: var(--muted); background: none; padding: 0; }
+
+  /* Preguntas */
+  .faq { background: var(--white); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .faq .list { max-width: 760px; margin-top: 1.6rem; }
+  details { border-bottom: 1px solid var(--line); padding: .95rem 0; }
+  summary { cursor: pointer; font-weight: 600; font-size: 1.07rem; }
+  details p { margin-top: .5rem; color: var(--muted); }
+
+  /* Vende */
+  .cta { background: var(--brass-light); padding: 3rem 0; }
+  .cta .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
+  .cta p { margin-top: .3rem; max-width: 52ch; }
+
+  /* Contacto */
+  .contact .wrap { display: grid; grid-template-columns: 1fr 1.1fr; gap: 2.5rem; }
+  address { font-style: normal; margin-top: 1rem; line-height: 1.85; }
+  .contact .wa { margin-top: 1.2rem; }
+  form { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.4rem; display: grid; gap: .9rem; }
+  form label { font-weight: 600; font-size: .95rem; display: block; margin-bottom: .25rem; }
+  form input, form textarea, form select { width: 100%; font: inherit; padding: .65rem .7rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); color: var(--ink); }
+  form textarea { min-height: 110px; resize: vertical; }
+  #estado { font-weight: 600; color: var(--pine); }
+
+  footer.base { background: var(--pine-dark); color: #cfdcd8; padding: 1.6rem 0; font-size: .95rem; }
+  footer.base .wrap { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  footer.base a { color: var(--white); }
+
+  @media (max-width: 860px) {
+    .hero .wrap, .about .wrap, .contact .wrap { grid-template-columns: 1fr; }
+    .stats ul { grid-template-columns: repeat(2, 1fr); }
+    .dlg { grid-template-columns: 1fr; }
+    .dlg .photo { min-height: 0; aspect-ratio: 16 / 10; }
+    section { padding: 3rem 0; }
+    .hero .wrap { padding-top: 2.4rem; padding-bottom: 2.4rem; }
+  }
+  @media (max-width: 520px) {
+    .team { grid-template-columns: 1fr 1fr 1fr; gap: .6rem; }
+    nav ul { gap: .9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#inicio" aria-label="Inmobiliaria Ejemplo, inicio">
+      <svg width="30" height="30" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="8" fill="#b8893b"/><path d="M8 21 L20 10 L32 21 V31 H8Z" fill="#0d302b"/><rect x="17" y="22" width="6" height="9" fill="#b8893b"/></svg>
+      <span style="color:#fff">Inmobiliaria <span>Ejemplo</span></span>
+    </a>
+    <nav aria-label="Principal">
+      <ul>
+        <li><a href="#propiedades">Propiedades</a></li>
+        <li><a href="#servicios">Servicios</a></li>
+        <li><a href="#zonas">Zonas</a></li>
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#contacto" class="btn">Contacto</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="inicio">
+
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <h1>Encuentra la casa donde quieres vivir</h1>
+        <p class="lead">Compra o alquila con un equipo que te acompaña desde la primera visita hasta la entrega de llaves.</p>
+
+        <div class="search" role="search" aria-label="Buscar propiedades">
+          <div class="field">
+            <label for="operacion">Quiero</label>
+            <select id="operacion">
+              <option value="todas">Comprar o alquilar</option>
+              <option value="comprar">Comprar</option>
+              <option value="alquilar">Alquilar</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="tipo">Tipo de vivienda</label>
+            <select id="tipo">
+              <option value="todos">Todos</option>
+              <option value="piso">Piso</option>
+              <option value="casa">Casa o chalet</option>
+              <option value="atico">Ático</option>
+              <option value="estudio">Estudio</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="habitaciones">Habitaciones</label>
+            <select id="habitaciones">
+              <option value="0">Cualquiera</option>
+              <option value="1">1 o más</option>
+              <option value="2">2 o más</option>
+              <option value="3">3 o más</option>
+              <option value="4">4 o más</option>
+            </select>
+          </div>
+          <a class="btn" href="#propiedades">Ver propiedades</a>
+        </div>
+      </div>
+      <div class="hero-art" id="heroArt"></div>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="wrap">
+      <ul>
+        <li><strong>+10 años</strong><span>en el mercado local</span></li>
+        <li><strong>+450</strong><span>viviendas gestionadas</span></li>
+        <li><strong>24 h</strong><span>para organizar tu visita</span></li>
+        <li><strong>0 €</strong><span>por valorar tu vivienda</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <section id="propiedades">
+    <div class="wrap">
+      <div class="toolbar">
+        <div>
+          <h2>Propiedades disponibles</h2>
+          <p class="intro">Datos e ilustraciones de ejemplo. Sustitúyelos por tus propiedades reales en el bloque de datos al final de este archivo.</p>
+        </div>
+        <p id="contador" role="status"></p>
+      </div>
+
+      <div class="grid" id="listado"></div>
+      <p class="empty" id="vacio" hidden>No hay propiedades con esos filtros. <button type="button" id="reiniciar">Quitar filtros</button> o <a href="#contacto">escríbenos</a> y te avisamos cuando entre algo nuevo.</p>
+    </div>
+  </section>
+
+  <section class="services" id="servicios">
+    <div class="wrap">
+      <h2>Qué hacemos por ti</h2>
+      <p class="intro">Una sola agencia para comprar, vender o alquilar, con el papeleo resuelto.</p>
+      <div class="cards4">
+        <article class="service">
+          <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M4 20 L20 6 L36 20 V35 H4Z"/><path d="M16 35 V24 H24 V35"/></svg>
+          <h3>Comprar</h3>
+          <p>Te proponemos solo viviendas que encajan con tu presupuesto y te acompañamos en cada visita.</p>
+        </article>
+        <article class="service">
+          <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15"/><path d="M26 14 A8 8 0 1 0 26 26 M12 18 H24 M12 22 H24"/></svg>
+          <h3>Vender</h3>
+          <p>Fotografía, anuncio en los principales portales y filtro de compradores para que no pierdas tiempo.</p>
+        </article>
+        <article class="service">
+          <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="12" cy="20" r="7"/><path d="M19 20 H36 M31 20 V27 M36 20 V25"/></svg>
+          <h3>Alquilar</h3>
+          <p>Contratos claros, comprobación de inquilinos y gestión del alquiler si no quieres ocuparte tú.</p>
+        </article>
+        <article class="service">
+          <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="17" cy="17" r="11"/><path d="M25 25 L36 36"/><path d="M12 19 L17 14 L22 19 V22 H12Z"/></svg>
+          <h3>Valorar</h3>
+          <p>Estudio de precio basado en ventas reales de tu zona, sin coste y sin compromiso.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="process">
+    <div class="wrap">
+      <h2>Cómo trabajamos</h2>
+      <p class="intro">Cuatro pasos, siempre con la misma persona de contacto.</p>
+      <ol>
+        <li><h3>Nos cuentas qué buscas</h3><p>Una llamada o un mensaje para conocer tu presupuesto, zona y plazos.</p></li>
+        <li><h3>Seleccionamos y visitamos</h3><p>Preparamos una lista corta y organizamos las visitas en un solo día.</p></li>
+        <li><h3>Negociamos y revisamos</h3><p>Hablamos con la otra parte y comprobamos la documentación de la vivienda.</p></li>
+        <li><h3>Firmamos y entregamos llaves</h3><p>Nos encargamos del contrato y de que todo quede cerrado.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="zones" id="zonas">
+    <div class="wrap">
+      <h2>Las zonas donde trabajamos</h2>
+      <p class="intro">Conocemos cada barrio: transporte, colegios, servicios y cómo se vive en él.</p>
+      <div class="cards4" id="zonasGrid"></div>
+    </div>
+  </section>
+
+  <section class="about" id="nosotros">
+    <div class="wrap">
+      <div class="art" id="aboutArt"></div>
+      <div>
+        <h2>Quiénes somos</h2>
+        <p>Somos una inmobiliaria local con más de diez años ayudando a familias a comprar, vender y alquilar. Te decimos con claridad qué ofrece cada vivienda, también lo que no te conviene.</p>
+        <ul class="team" id="equipo"></ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="opiniones">
+    <div class="wrap">
+      <h2>Lo que dicen nuestros clientes</h2>
+      <p class="intro">Opiniones de ejemplo para la presentación.</p>
+      <div class="quotes">
+        <blockquote>
+          <p>Vendimos nuestro piso en tres semanas y por el precio que pedíamos. Nos explicaron cada paso sin prisas.</p>
+          <footer>Marta y Jorge, vendedores en el Centro</footer>
+        </blockquote>
+        <blockquote>
+          <p>Buscaba alquiler con poco tiempo y me enseñaron cuatro pisos el mismo sábado. Firmé el lunes.</p>
+          <footer>Daniel, inquilino en el barrio universitario</footer>
+        </blockquote>
+        <blockquote>
+          <p>Como compradores primerizos teníamos muchas dudas. Siempre contestaron rápido y con claridad.</p>
+          <footer>Lucía y Pablo, compradores de una casa con jardín</footer>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq">
+    <div class="wrap">
+      <h2>Preguntas frecuentes</h2>
+      <div class="list">
+        <details>
+          <summary>¿Cuánto cuesta valorar mi vivienda?</summary>
+          <p>Nada. Hacemos la valoración gratis y sin compromiso de venta.</p>
+        </details>
+        <details>
+          <summary>¿Qué necesito para alquilar un piso?</summary>
+          <p>Normalmente DNI, justificantes de ingresos y, según el caso, un aval o depósito. Te lo confirmamos antes de visitar.</p>
+        </details>
+        <details>
+          <summary>¿Puedo visitar una vivienda en fin de semana?</summary>
+          <p>Sí. Organizamos visitas también los sábados, previa cita.</p>
+        </details>
+        <details>
+          <summary>¿Me ayudáis con la hipoteca?</summary>
+          <p>Te orientamos y te ponemos en contacto con asesores financieros de confianza para comparar ofertas.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta">
+    <div class="wrap">
+      <div>
+        <h2>¿Quieres vender o alquilar tu vivienda?</h2>
+        <p>Cuéntanos dónde está y te damos una valoración gratuita en 48 horas.</p>
+      </div>
+      <a class="btn dark" href="#contacto" data-asunto="Quiero una valoración gratuita">Pedir valoración gratis</a>
+    </div>
+  </div>
+
+  <section class="contact" id="contacto">
+    <div class="wrap">
+      <div>
+        <h2>Contacto</h2>
+        <p class="intro">Cuéntanos qué buscas y te respondemos en menos de 24 horas.</p>
+        <address>
+          Calle de Ejemplo 12, 1.º A<br>
+          Tel. <a href="tel:+34600000000">600 000 000</a><br>
+          <a href="mailto:info@ejemplo.com">info@ejemplo.com</a><br>
+          Lunes a viernes, 9:00–19:00
+        </address>
+        <a class="btn dark wa" href="https://wa.me/34600000000?text=Hola%2C%20me%20gustar%C3%ADa%20recibir%20informaci%C3%B3n" target="_blank" rel="noopener">Escribir por WhatsApp</a>
+      </div>
+
+      <!--
+        Formulario de prueba: no envía nada.
+        Para que funcione, crea un formulario gratis en formspree.io
+        y cambia action="#" por la URL que te den.
+      -->
+      <form id="formulario" action="#" method="POST">
+        <div>
+          <label for="nombre">Nombre</label>
+          <input id="nombre" name="nombre" type="text" autocomplete="name" required>
+        </div>
+        <div>
+          <label for="email">Correo electrónico</label>
+          <input id="email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div>
+          <label for="asunto">Me interesa</label>
+          <select id="asunto" name="asunto">
+            <option>Comprar una vivienda</option>
+            <option>Alquilar una vivienda</option>
+            <option>Quiero una valoración gratuita</option>
+            <option>Otra consulta</option>
+          </select>
+        </div>
+        <div>
+          <label for="mensaje">Mensaje</label>
+          <textarea id="mensaje" name="mensaje" required></textarea>
+        </div>
+        <button class="btn dark" type="submit">Enviar mensaje</button>
+        <p id="estado" role="status"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="base">
+  <div class="wrap">
+    <span>© 2026 Inmobiliaria Ejemplo. Página piloto.</span>
+    <span><a href="#">Aviso legal</a> · <a href="#">Privacidad</a> · <a href="#">Cookies</a></span>
+  </div>
+</footer>
+
+<dialog id="detalle" aria-labelledby="dTitulo">
+  <button class="close" type="button" id="cerrar" aria-label="Cerrar">×</button>
+  <div class="dlg">
+    <div class="photo" id="dFoto"></div>
+    <div class="info">
+      <p class="price" id="dPrecio"></p>
+      <h3 id="dTitulo"></h3>
+      <p class="zone" id="dZona"></p>
+      <p id="dDesc"></p>
+      <ul id="dExtras"></ul>
+      <div class="actions">
+        <a class="btn" id="dWa" href="#" target="_blank" rel="noopener">Pedir visita por WhatsApp</a>
+        <a class="btn ghost" id="dContacto" href="#contacto">Escribirnos</a>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script>
+/* =========================================================
+   DATOS DE EJEMPLO: edita aquí tus propiedades, zonas y equipo
+   ========================================================= */
+const WHATSAPP = "34600000000";
+
+const paletas = {
+  piso:    { sky: "#d6ebf7", sun: "#ffd978", ground: "#9ccf9a", wall: "#e8edf0", roof: "#14463f" },
+  casa:    { sky: "#fbe3c6", sun: "#ff9f5a", ground: "#8fc58c", wall: "#f3efe6", roof: "#a24f3a" },
+  estudio: { sky: "#dcefe9", sun: "#fff0a8", ground: "#a8d5a2", wall: "#3f6f8a", roof: "#1d3b4d" },
+  atico:   { sky: "#e5dcf5", sun: "#ffd1e0", ground: "#9fc7a0", wall: "#f4f1ec", roof: "#3a4a5a" },
+  apto:    { sky: "#cfe9f7", sun: "#ffe28a", ground: "#7fbf7a", wall: "#f0c9a8", roof: "#7a3b2e" },
+  chalet:  { sky: "#d3ecf9", sun: "#ffd36b", ground: "#92cc8e", wall: "#f5f5f2", roof: "#384a57" }
+};
+
+const propiedades = [
+  { id: 1, titulo: "Piso luminoso con balcón", tipo: "piso", escena: "piso", zona: "Centro", operacion: "comprar", precio: 245000, hab: 3, banos: 2, m2: 98, nuevo: true,
+    desc: "Tercera planta con mucha luz natural, cocina reformada y balcón a la calle principal. A cinco minutos del metro.",
+    extras: ["Ascensor", "Calefacción central", "Trastero incluido", "Aire acondicionado"] },
+  { id: 2, titulo: "Casa con jardín y garaje", tipo: "casa", escena: "casa", zona: "Zona residencial norte", operacion: "comprar", precio: 389000, hab: 4, banos: 3, m2: 180,
+    desc: "Casa familiar en calle tranquila, con jardín de 120 m², salón con chimenea y garaje para dos coches.",
+    extras: ["Jardín privado", "Garaje para 2 coches", "Chimenea", "Cerca de colegios"] },
+  { id: 3, titulo: "Estudio reformado", tipo: "estudio", escena: "estudio", zona: "Barrio universitario", operacion: "alquilar", precio: 750, hab: 1, banos: 1, m2: 38,
+    desc: "Estudio diáfano recién reformado, amueblado y con grandes ventanales. Ideal para una persona o pareja.",
+    extras: ["Amueblado", "Internet incluido", "Gastos de comunidad incluidos"] },
+  { id: 4, titulo: "Ático con terraza", tipo: "atico", escena: "atico", zona: "Casco antiguo", operacion: "comprar", precio: 420000, hab: 3, banos: 2, m2: 120, nuevo: true,
+    desc: "Último piso con terraza de 40 m² y vistas despejadas. Edificio rehabilitado en el corazón del casco antiguo.",
+    extras: ["Terraza de 40 m²", "Ascensor", "Edificio rehabilitado", "Vistas despejadas"] },
+  { id: 5, titulo: "Apartamento junto al parque", tipo: "piso", escena: "apto", zona: "Parque del Oeste", operacion: "alquilar", precio: 1100, hab: 2, banos: 1, m2: 70,
+    desc: "Apartamento exterior frente al parque, con cocina equipada y plaza de bicicletas en el portal.",
+    extras: ["Frente al parque", "Cocina equipada", "Parada de autobús en la puerta"] },
+  { id: 6, titulo: "Chalet adosado con piscina", tipo: "casa", escena: "chalet", zona: "Urbanización Las Encinas", operacion: "comprar", precio: 310000, hab: 4, banos: 2, m2: 150,
+    desc: "Chalet adosado en urbanización cerrada con piscina comunitaria y zonas verdes. Garaje y patio privado.",
+    extras: ["Piscina", "Urbanización cerrada", "Garaje", "Patio privado"] }
+];
+
+const zonas = [
+  { nombre: "Centro", texto: "Todo a pie: comercios, transporte y vida de barrio.", escena: "piso" },
+  { nombre: "Casco antiguo", texto: "Calles con historia, edificios rehabilitados y terrazas.", escena: "atico" },
+  { nombre: "Zona residencial norte", texto: "Casas con jardín, colegios cerca y mucha tranquilidad.", escena: "casa" },
+  { nombre: "Parque del Oeste", texto: "Pisos junto al parque, ideales para pasear y hacer deporte.", escena: "apto" }
+];
+
+const equipo = [
+  { nombre: "Laura Gómez", cargo: "Dirección", piel: "#e8b894", pelo: "#3b2a20", ropa: "#14463f" },
+  { nombre: "Marcos Ibáñez", cargo: "Ventas", piel: "#c98f6b", pelo: "#1d1814", ropa: "#3a4a5a" },
+  { nombre: "Elena Ruiz", cargo: "Alquileres", piel: "#f0c9a8", pelo: "#a8642e", ropa: "#b8893b" }
+];
+
+/* =========================================================
+   ILUSTRACIONES (dibujos en SVG, no necesitan internet)
+   ========================================================= */
+const V = (x, y, w, h, f) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="${f || "#cfe6f2"}" stroke="rgba(255,255,255,.9)" stroke-width="2"/>`;
+const arbol = (x, y, s, c) => `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-4" y="-10" width="8" height="30" fill="#6b4a2f"/><circle cx="0" cy="-30" r="24" fill="${c}"/><circle cx="-16" cy="-16" r="16" fill="${c}"/><circle cx="16" cy="-16" r="16" fill="${c}"/></g>`;
+function rejilla(x0, y0, cols, rows, dx, dy, w, h) {
+  let o = "";
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) o += V(x0 + c * dx, y0 + r * dy, w, h);
+  return o;
+}
+
+// Edificios (sin cielo ni suelo). El suelo está en y = 235.
+const construir = {
+  piso: p => `<rect x="124" y="44" width="152" height="10" fill="${p.roof}"/><rect x="130" y="52" width="140" height="183" fill="${p.wall}"/>${rejilla(145, 66, 3, 4, 42, 36, 30, 26)}<rect x="140" y="128" width="120" height="5" fill="${p.roof}"/><rect x="186" y="205" width="28" height="30" rx="2" fill="${p.roof}"/>`,
+  casa: p => `<rect x="250" y="84" width="16" height="40" fill="${p.roof}"/><polygon points="95,142 200,70 305,142" fill="${p.roof}"/><rect x="110" y="140" width="180" height="95" fill="${p.wall}"/>${V(127, 160, 40, 32)}${V(233, 160, 40, 32)}<rect x="184" y="182" width="32" height="53" rx="2" fill="${p.roof}"/><circle cx="209" cy="210" r="2" fill="#fff"/>`,
+  estudio: p => `<rect x="84" y="156" width="232" height="10" fill="${p.roof}"/><rect x="90" y="165" width="220" height="70" fill="${p.wall}"/>${V(106, 180, 76, 44)}${V(194, 180, 48, 44)}<rect x="258" y="186" width="32" height="49" rx="2" fill="${p.roof}"/><rect x="294" y="224" width="10" height="11" fill="#b4694a"/><circle cx="299" cy="218" r="9" fill="#2f7a56"/>`,
+  atico: p => {
+    const barandilla = [100, 272].map(x0 => `<rect x="${x0}" y="72" width="28" height="3" fill="${p.roof}"/>` + [0, 7, 14, 21, 26].map(d => `<rect x="${x0 + d}" y="72" width="2" height="18" fill="${p.roof}"/>`).join("")).join("");
+    return `<rect x="100" y="90" width="200" height="145" fill="${p.wall}"/><rect x="94" y="84" width="212" height="8" fill="${p.roof}"/><rect x="130" y="40" width="140" height="46" fill="${p.wall}"/><rect x="124" y="34" width="152" height="8" fill="${p.roof}"/>${V(142, 50, 50, 30, "#bfe0ef")}${V(208, 50, 50, 30, "#bfe0ef")}${barandilla}<circle cx="113" cy="82" r="8" fill="#2f7a56"/><circle cx="287" cy="82" r="8" fill="#2f7a56"/>${rejilla(112, 106, 4, 2, 46, 38, 34, 26)}<rect x="184" y="195" width="32" height="40" rx="2" fill="${p.roof}"/>`;
+  },
+  apto: p => `<rect x="48" y="88" width="152" height="8" fill="${p.roof}"/><rect x="54" y="94" width="140" height="141" fill="${p.wall}"/>${rejilla(68, 106, 3, 3, 42, 34, 30, 24)}<rect x="110" y="203" width="28" height="32" rx="2" fill="${p.roof}"/>`,
+  chalet: p => `<polygon points="80,142 165,90 250,142" fill="${p.roof}"/><rect x="90" y="140" width="150" height="95" fill="${p.wall}"/>${V(105, 160, 36, 32)}${V(190, 160, 36, 32)}<rect x="148" y="182" width="30" height="53" rx="2" fill="${p.roof}"/><rect x="234" y="164" width="86" height="8" fill="${p.roof}"/><rect x="240" y="172" width="74" height="63" fill="${p.wall}"/><rect x="252" y="186" width="50" height="49" fill="#c9d1d4"/><g stroke="#aab4b8" stroke-width="2"><line x1="252" y1="196" x2="302" y2="196"/><line x1="252" y1="206" x2="302" y2="206"/><line x1="252" y1="216" x2="302" y2="216"/><line x1="252" y1="226" x2="302" y2="226"/></g>`
+};
+
+// Elementos de entorno (árboles, valla, piscina, parque)
+const entorno = {
+  piso:    () => arbol(62, 215, 1, "#2f7a56") + arbol(342, 215, 1.1, "#3f8f5f"),
+  casa:    () => arbol(52, 215, 1.1, "#2f7a56") + `<rect x="296" y="218" width="104" height="4" fill="#fff"/>` + [300, 320, 340, 360, 380].map(x => `<rect x="${x}" y="212" width="5" height="23" fill="#fff"/>`).join(""),
+  estudio: () => arbol(50, 215, 1, "#3f8f5f") + arbol(354, 215, .9, "#2f7a56"),
+  atico:   () => arbol(52, 215, 1, "#2f7a56") + arbol(350, 215, 1, "#3f8f5f"),
+  apto:    () => `<path d="M200 235 Q232 252 262 300 L304 300 Q264 250 242 235Z" fill="#e0d6bf"/>` + arbol(262, 215, 1.2, "#2f7a56") + arbol(318, 215, 1, "#3f8f5f") + arbol(366, 215, 1.1, "#2f7a56") + `<rect x="206" y="222" width="36" height="5" fill="#6b4a2f"/><rect x="209" y="227" width="3" height="8" fill="#6b4a2f"/><rect x="236" y="227" width="3" height="8" fill="#6b4a2f"/>`,
+  chalet:  () => arbol(352, 215, 1.1, "#2f7a56") + arbol(40, 215, .9, "#3f8f5f") + `<rect x="70" y="252" width="190" height="34" rx="10" fill="#4fb3d9"/><path d="M85 262 q15 -6 30 0 t30 0 t30 0 t30 0" stroke="#fff" fill="none" stroke-opacity=".75" stroke-width="2"/>`
+};
+
+function escena(clave, etiqueta) {
+  const p = paletas[clave];
+  return `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${etiqueta}">
+    <rect width="400" height="300" fill="${p.sky}"/>
+    <circle cx="330" cy="58" r="26" fill="${p.sun}"/>
+    <g fill="#fff" opacity=".85"><ellipse cx="80" cy="55" rx="34" ry="12"/><ellipse cx="105" cy="48" rx="26" ry="11"/><ellipse cx="270" cy="92" rx="26" ry="9"/></g>
+    <rect y="235" width="400" height="65" fill="${p.ground}"/>
+    ${entorno[clave]()}
+    ${construir[clave](p)}
+  </svg>`;
+}
+
+function escenaHeroe() {
+  const t = (clave, tx, s) => `<g transform="translate(${tx} ${330 - 235 * s}) scale(${s})">${construir[clave](paletas[clave])}</g>`;
+  return `<svg viewBox="0 0 600 400" role="img" aria-label="Dibujo de una calle con casas y edificios">
+    <defs><linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe3f4"/><stop offset="1" stop-color="#eef7f3"/></linearGradient></defs>
+    <rect width="600" height="400" fill="url(#cielo)"/>
+    <circle cx="505" cy="78" r="36" fill="#ffd978"/>
+    <g fill="#fff" opacity=".9"><ellipse cx="120" cy="70" rx="48" ry="14"/><ellipse cx="152" cy="60" rx="34" ry="12"/><ellipse cx="360" cy="110" rx="36" ry="11"/></g>
+    <path d="M0 300 Q120 240 260 290 T600 268 V340 H0Z" fill="#cfe7d2"/>
+    <rect y="330" width="600" height="22" fill="#8fc58c"/>
+    <rect y="352" width="600" height="48" fill="#5a6865"/>
+    <line x1="0" y1="378" x2="600" y2="378" stroke="#fff" stroke-width="3" stroke-dasharray="24 16"/>
+    ${t("casa", -30, .9)}
+    ${arbol(268, 317, .9, "#2f7a56")}
+    ${t("piso", 170, 1)}
+    ${arbol(448, 317, .8, "#3f8f5f")}
+    ${t("atico", 375, .75)}
+  </svg>`;
+}
+
+function escenaEquipo() {
+  return `<svg viewBox="0 0 600 420" role="img" aria-label="Dibujo de la fachada de la oficina de la inmobiliaria">
+    <rect width="600" height="420" fill="#e6f1ee"/>
+    <rect y="330" width="600" height="90" fill="#9ccf9a"/>
+    <rect x="110" y="110" width="380" height="220" fill="#f4f1ec"/>
+    <rect x="98" y="98" width="404" height="16" fill="#14463f"/>
+    <rect x="150" y="60" width="300" height="42" rx="6" fill="#0d302b"/>
+    <text x="300" y="89" text-anchor="middle" font-family="Bricolage Grotesque, Segoe UI, sans-serif" font-weight="700" font-size="24" fill="#b8893b">INMOBILIARIA EJEMPLO</text>
+    <rect x="140" y="140" width="130" height="110" rx="4" fill="#cfe6f2" stroke="#fff" stroke-width="4"/>
+    <rect x="330" y="140" width="130" height="110" rx="4" fill="#cfe6f2" stroke="#fff" stroke-width="4"/>
+    <g fill="#fff" opacity=".9"><rect x="155" y="155" width="48" height="36" rx="2"/><rect x="215" y="155" width="40" height="36" rx="2"/><rect x="345" y="155" width="48" height="36" rx="2"/><rect x="405" y="155" width="40" height="36" rx="2"/></g>
+    <rect x="270" y="190" width="60" height="140" rx="3" fill="#14463f"/>
+    <circle cx="320" cy="262" r="3" fill="#b8893b"/>
+    <rect x="120" y="290" width="14" height="40" fill="#b4694a"/><circle cx="127" cy="278" r="16" fill="#2f7a56"/>
+    <rect x="466" y="290" width="14" height="40" fill="#b4694a"/><circle cx="473" cy="278" r="16" fill="#2f7a56"/>
+    ${arbol(70, 330, 1.3, "#2f7a56")}${arbol(540, 330, 1.2, "#3f8f5f")}
+  </svg>`;
+}
+
+function avatar(m) {
+  return `<svg viewBox="0 0 80 80" role="img" aria-label="Dibujo de ${m.nombre}"><rect width="80" height="80" fill="#dfeae6"/><circle cx="40" cy="36" r="15" fill="${m.piel}"/><path d="M24 34 Q24 14 40 14 Q56 14 56 34 Q50 25 40 25 Q30 25 24 34Z" fill="${m.pelo}"/><circle cx="35" cy="37" r="1.6" fill="#1b2a28"/><circle cx="45" cy="37" r="1.6" fill="#1b2a28"/><path d="M35 44 Q40 48 45 44" stroke="#1b2a28" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M10 80 Q10 57 40 57 Q70 57 70 80Z" fill="${m.ropa}"/></svg>`;
+}
+
+/* =========================================================
+   LÓGICA DE LA PÁGINA
+   ========================================================= */
+const $ = id => document.getElementById(id);
+const euros = new Intl.NumberFormat("es-ES");
+const selOperacion = $("operacion"), selTipo = $("tipo"), selHab = $("habitaciones");
+
+function tarjeta(p) {
+  const alquiler = p.operacion === "alquilar";
+  const precio = euros.format(p.precio) + " €" + (alquiler ? " <small>/mes</small>" : "");
+  return `
+    <article class="card">
+      <div class="photo">
+        ${escena(p.escena, "Dibujo de " + p.titulo.toLowerCase())}
+        <span class="tag">${alquiler ? "Alquiler" : "Venta"}</span>
+        ${p.nuevo ? '<span class="tag nuevo">Novedad</span>' : ""}
+      </div>
+      <div class="body">
+        <p class="price">${precio}</p>
+        <h3>${p.titulo}</h3>
+        <p class="zone">${p.zona}</p>
+        <div class="facts"><span>${p.hab} hab.</span><span>${p.banos} baños</span><span>${p.m2} m²</span></div>
+        <button class="more" type="button" data-id="${p.id}">Ver detalle</button>
+      </div>
+    </article>`;
+}
+
+function mostrar() {
+  const op = selOperacion.value, tipo = selTipo.value, minHab = parseInt(selHab.value, 10);
+  const lista = propiedades.filter(p =>
+    (op === "todas" || p.operacion === op) &&
+    (tipo === "todos" || p.tipo === tipo) &&
+    p.hab >= minHab
+  );
+  $("listado").innerHTML = lista.map(tarjeta).join("");
+  $("vacio").hidden = lista.length > 0;
+  $("contador").textContent = lista.length === 1 ? "1 propiedad" : lista.length + " propiedades";
+}
+[selOperacion, selTipo, selHab].forEach(s => s.addEventListener("change", mostrar));
+$("reiniciar").addEventListener("click", () => {
+  selOperacion.value = "todas"; selTipo.value = "todos"; selHab.value = "0"; mostrar();
+});
+
+// Ventana de detalle
+const dlg = $("detalle");
+$("listado").addEventListener("click", e => {
+  const b = e.target.closest("button[data-id]");
+  if (!b) return;
+  const p = propiedades.find(x => x.id === Number(b.dataset.id));
+  const alquiler = p.operacion === "alquilar";
+  $("dFoto").innerHTML = escena(p.escena, "Dibujo de " + p.titulo.toLowerCase());
+  $("dPrecio").innerHTML = euros.format(p.precio) + " €" + (alquiler ? " <small>/mes</small>" : "");
+  $("dTitulo").textContent = p.titulo;
+  $("dZona").textContent = p.zona + " · " + p.hab + " hab. · " + p.banos + " baños · " + p.m2 + " m²";
+  $("dDesc").textContent = p.desc;
+  $("dExtras").innerHTML = p.extras.map(x => "<li>" + x + "</li>").join("");
+  $("dWa").href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent("Hola, me interesa la propiedad: " + p.titulo + " (" + p.zona + "). ¿Podemos concertar una visita?");
+  $("dContacto").dataset.asunto = alquiler ? "Alquilar una vivienda" : "Comprar una vivienda";
+  $("mensaje").value = "Hola, me interesa: " + p.titulo + " (" + p.zona + ").";
+  dlg.showModal();
+});
+$("cerrar").addEventListener("click", () => dlg.close());
+dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });
+$("dContacto").addEventListener("click", () => dlg.close());
+
+// Botones que preseleccionan el motivo del formulario
+document.querySelectorAll("[data-asunto]").forEach(el => el.addEventListener("click", () => {
+  $("asunto").value = el.dataset.asunto;
+}));
+
+// Ilustraciones y bloques generados
+$("heroArt").innerHTML = escenaHeroe();
+$("aboutArt").innerHTML = escenaEquipo();
+$("zonasGrid").innerHTML = zonas.map(z => `
+  <article class="zonecard">
+    <div class="photo">${escena(z.escena, "Dibujo de la zona " + z.nombre)}</div>
+    <div class="t"><h3>${z.nombre}</h3><p>${z.texto}</p></div>
+  </article>`).join("");
+$("equipo").innerHTML = equipo.map(m => `<li>${avatar(m)}<strong>${m.nombre}</strong><span>${m.cargo}</span></li>`).join("");
+
+mostrar();
+
+// Formulario de prueba: solo muestra un aviso.
+$("formulario").addEventListener("submit", function (e) {
+  e.preventDefault();
+  $("estado").textContent = "Mensaje de prueba recibido. Este formulario aún no envía datos reales.";
+  this.reset();
+});
+</script>
+</body>
+</html>
